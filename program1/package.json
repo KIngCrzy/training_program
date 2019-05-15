@@ -2,7 +2,7 @@
   "name": "program1",
   "version": "1.0.0",
   "description": "",
-  "main": "Program1.js",
+  "main": "program1.js",
   "dependencies": {},
   "devDependencies": {},
   "scripts": {
