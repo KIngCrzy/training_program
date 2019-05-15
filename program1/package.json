@@ -4,11 +4,7 @@
   "description": "",
   "main": "Program1.js",
   "dependencies": {},
-  "devDependencies": {
-  	"eslint": "^5.16.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.17.2"
-  },
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
