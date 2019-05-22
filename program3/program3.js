@@ -7,57 +7,37 @@ const client = redis.createClient()
 
 const app = new Koa()
 const router = new Router()
-let random = 0
-let num = 0
-let state = 0
 
 const getrandom = util.promisify(client.get).bind(client)
 
-function compare(r) {
-	console.log('random:', r)
-	if (num > r) {
-		state = 0
+function compare(num, random, ctx) {
+	console.log('random:', random)
+	if (num > random) {
+		ctx.response.body = 'bigger'
 	}
-	if (num === r) {
-		state = 1
+	if (num === random) {
+		ctx.response.body = 'equal'
+		const newrandom = Math.floor((Math.random() * 100 + 1))
+		client.set('random', newrandom)
+		console.log('new random:', newrandom)
 	}
-	if (num < r) {
-		state = 2
+	if (num < random) {
+		ctx.response.body = 'smaller'
 	}
 }
 
 router.get('/start', async (ctx) => {
-	if (random === 0) {
-		random = Math.floor((Math.random() * 100 + 1))
-	}
+	const random = Math.floor((Math.random() * 100 + 1))
 	client.set('random', random)
-	client.get('random', (err, v) => {
-		console.log('random', v)
-	})
+	console.log('new random:', random)
 	ctx.response.body = 'ok'
 })
 
 router.get('/:number', async (ctx) => {
-	num = ctx.params.number
+	const num = ctx.params.number
 	console.log('num:', num)
-	const random1 = await getrandom('random')
-	compare(random1)
-	switch (state) {
-	case 0:
-		ctx.response.body = 'bigger'
-		break
-	case 1:
-		ctx.response.body = 'equal'
-		random = Math.floor((Math.random() * 100 + 1))
-		client.set('random', random)
-		console.log('new random:', random)
-		break
-	case 2:
-		ctx.response.body = 'smaller'
-		break
-	default:
-		break
-	}
+	const random = await getrandom('random')
+	compare(num, random, ctx)
 })
 
 app.use(router.routes()).use(router.allowedMethods())
