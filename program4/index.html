@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+	</head>
+	<body>
+		<p>Number Guesser</p>
+		<form>
+			<input
+				type="text"
+				id="guessnum"
+				name="guessnum"
+				placeholder="Guess A Number"
+			/><br />
+			<input type="reset" value="restart" id="restart" />
+			<input type="button" value="submit" id="submit" />
+		</form>
+		<div id="result"></div>
+	</body>
+	<script>
+		$('#submit').click(function() {
+			var guessnum = $('#guessnum').val()
+			var result = $('#result')
+			$.ajax({
+				url: 'http://127.0.0.1:8080/guess?guessnum=' + guessnum,
+				type: 'get',
+				success: function(data) {
+					console.log(data)
+					// console.log(result)
+					result.text(data)
+				},
+				error: function(err) {
+					console.log(err)
+				}
+			})
+		})
+
+		$('#restart').click(function() {
+			var signal = 1
+			var result = $('#result')
+			$.ajax({
+				url: 'http://127.0.0.1:8080/restart',
+				type: 'get',
+				success: function(data) {
+					console.log(data)
+					// console.log(result)
+					result.text(data)
+				},
+				error: function(err) {
+					console.log(err)
+				}
+			})
+		})
+	</script>
+</html>
