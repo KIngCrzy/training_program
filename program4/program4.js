@@ -14,13 +14,19 @@ app.use(cors())
 app.use(bodyparser())
 
 const getrandom = util.promisify(client.get).bind(client)
+const setrandom = util.promisify(client.set).bind(client)
+
+function setnewrandom(ctx) {
+	const newrandom = Math.floor(Math.random() * 100 + 1)
+	setrandom('random', newrandom)
+	ctx.response.body = 'ok'
+}
 
 function compare(num, random, ctx) {
 	console.log('getnum:', num)
 	console.log('random:', random)
 	if (num > random) {
 		ctx.response.body = 'bigger'
-		console.log('bigger')
 	}
 	if (num === random) {
 		ctx.response.body = 'equal'
@@ -30,21 +36,12 @@ function compare(num, random, ctx) {
 	}
 	if (num < random) {
 		ctx.response.body = 'smaller'
-		console.log('smaller')
 	}
 }
 
-function setnewrandom(ctx) {
-	const newrandom = Math.floor(Math.random() * 100 + 1)
-	client.set('random', newrandom)
-	console.log('new random:', newrandom)
-	ctx.response.body = 'ok'
-}
-
 router.get('/guess', async (ctx) => {
-	const guessnum = ctx.query.guessnum
-	console.log(guessnum)
-	const random = await getrandom('random')
+	const guessnum = Number(ctx.query.guessnum)
+	const random = Number(await getrandom('random'))
 	compare(guessnum, random, ctx)
 })
 
@@ -53,4 +50,4 @@ router.get('/restart', async (ctx) => {
 })
 
 app.use(router.routes()).use(router.allowedMethods())
-app.listen(process.argv[2])
+app.listen(8080)
