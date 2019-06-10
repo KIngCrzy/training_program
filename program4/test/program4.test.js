@@ -9,9 +9,8 @@ const getrandom = util.promisify(client.get).bind(client)
 describe('restart', () => {
 	let random
 	before(async () => {
-		await rp.get('http://127.0.0.1:8080/restart').then((body) => {
-			body.should.eql('ok')
-		})
+		const body = await rp.get('http://127.0.0.1:8080/restart')
+		body.should.eql('ok')
 		random = Number(await getrandom('random'))
 	})
 
