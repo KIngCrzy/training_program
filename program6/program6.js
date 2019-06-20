@@ -9,9 +9,6 @@ const crypto = require('crypto')
 mongoose.Promise = global.Promise
 mongoose.set('debug', true)
 mongoose.connect('mongodb://localhost:27017/mydb', { useNewUrlParser: true })
-const db = mongoose.connection
-db.on('error', console.error.bind(console, 'connection error:'))
-db.once('open', () => {})
 
 const user = mongoose.model('user', {
 	name: String,
@@ -56,13 +53,11 @@ app.keys = ['some secret hurr']
 app.use(session(app))
 
 router.get('/register/:name/:password', async (ctx) => {
-	const { name } = ctx.params
-	const { password } = ctx.params
+	const { name, password } = ctx.params
 	const salt = getRandomSalt()
 	const md5password = md5pwd(name, password, salt)
-	const doc = await user.find({ name })
-	console.log('doclength:', doc.length)
-	if (doc.length === 0) {
+	const doc = await user.findOne({ name })
+	if (doc === null) {
 		const newuser = new user({
 			name,
 			salt,
@@ -76,8 +71,7 @@ router.get('/register/:name/:password', async (ctx) => {
 })
 
 router.get('/login/:name/:password', async (ctx) => {
-	const { name } = ctx.params
-	const { password } = ctx.params
+	const { name, password } = ctx.params
 	const doc = await user.findOne({ name })
 	console.log('doc', doc)
 	if (doc === null) {
@@ -103,35 +97,43 @@ router.get('/start', async (ctx) => {
 		ctx.response.body = '请登录'
 	} else {
 		const random = getRandomSalt()
-		await number.updateOne({ userid }, { number: random })
-		ctx.response.body = '游戏开始'
-	}
-})
-
-router.get('/:number', async (ctx) => {
-	const userid = ctx.session.id
-	if (!userid) {
-		ctx.response.body = '请登录'
-	} else {
-		console.log('userid', userid)
-		const doc = await number.findOneAndUpdate({ userid })
+		const doc = await number.findOne({ userid })
 		if (doc === null) {
-			console.log('用户id不存在')
+			await number.create({ userid, number: random })
+			ctx.response.body = '游戏开始'
 		} else {
-			const random = Number(doc.number)
-			const num = Number(ctx.params.number)
-			compare(num, random, ctx)
+			await number.updateOne({ userid }, { number: random })
+			ctx.response.body = '游戏开始'
 		}
 	}
 })
 
-router.get('/logout/:name/:password', async (ctx) => {
+router.get('/guess/:number', async (ctx) => {
+	console.log(ctx.params)
+	const userid = ctx.session.id
+	if (!userid) {
+		ctx.response.body = '请登录'
+	} else {
+		const doc = await number.findOne({ userid })
+		const random = Number(doc.number)
+		const num = Number(ctx.params.number)
+		compare(num, random, ctx)
+	}
+})
+
+router.get('/logout', async (ctx) => {
+	ctx.session.id = null
+	ctx.response.body = '记录已删除'
+})
+
+router.get('/delete/:name', async (ctx) => {
 	const { name } = ctx.params
 	const doc = await user.findOne({ name })
-	console.log('doc', doc)
 	if (doc === null) {
 		ctx.response.body = '用户不存在'
 	} else {
+		const userid = doc.id
+		await number.deleteOne({ userid })
 		await user.deleteOne({ name })
 		ctx.response.body = '用户已删除'
 	}
