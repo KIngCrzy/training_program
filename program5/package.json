@@ -1,15 +1,14 @@
 {
-  "name": "program4",
+  "name": "program5",
   "version": "1.0.0",
   "description": "",
-  "main": "program4.js",
+  "main": "program5.js",
   "scripts": {
-    "test": "mocha"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "jquery": "^3.4.1",
     "koa": "^2.7.0",
     "koa-bodyparser": "^4.2.1",
     "koa-router": "^7.4.0",
@@ -17,8 +16,5 @@
     "redis": "^2.8.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4"
-  },
-  "devDependencies": {
-    "should": "^13.2.3"
   }
 }

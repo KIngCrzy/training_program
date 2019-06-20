@@ -17,7 +17,7 @@ const getrandom = util.promisify(client.get).bind(client)
 const setrandom = util.promisify(client.set).bind(client)
 
 function setnewrandom(ctx) {
-	const newrandom = Math.floor(Math.random() * 100 + 1)
+	const newrandom = Math.floor(Math.random() * 1000000 + 1)
 	setrandom('random', newrandom)
 	ctx.response.body = 'ok'
 }
@@ -30,7 +30,7 @@ function compare(num, random, ctx) {
 	}
 	if (num === random) {
 		ctx.response.body = 'equal'
-		const newrandom = Math.floor(Math.random() * 100 + 1)
+		const newrandom = Math.floor(Math.random() * 1000000 + 1)
 		client.set('random', newrandom)
 		console.log('new random:', newrandom)
 	}
