@@ -4,5 +4,5 @@ http.createServer((request, response) => {
 	response.writeHead(200, { 'Content-Type': 'text/plain' })
 
 	response.end('Hello World')
-}).listen(80)
+}).listen(6060)
 console.log('running')

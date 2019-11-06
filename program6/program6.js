@@ -20,6 +20,10 @@ const number = mongoose.model('number', {
 	number: Number,
 })
 
+function printinfo(ctx) {
+	console.log(ctx.params)
+}
+
 function getRandomSalt() {
 	return Math.random()
 		.toString()
@@ -141,5 +145,6 @@ router.get('/delete/:name', async (ctx) => {
 
 app.use(cors())
 app.use(bodyparser())
+app.use(printinfo())
 app.use(router.routes()).use(router.allowedMethods())
 app.listen(8080)
